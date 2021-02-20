@@ -1,43 +1,3 @@
-<html>
-
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <style>
-        body {
-            font-family: Calibri;
-            font-size: 14px;
-        }
-
-        table.board {
-            border-spacing: 0;
-        }
-
-        table.board td,
-        table.board th {
-            height: 30px;
-            width: 30px;
-            padding: 0;
-            text-align: center;
-        }
-
-        table.board td {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-        }
-
-
-        #myEmptyBoard td {
-            cursor: crosshair;
-        }
-
-        #myEmptyBoard td:hover {
-            background-color: palegreen;
-        }
-
-
         #computerBoard td {
             cursor: crosshair;
         }
@@ -46,19 +6,30 @@
             background-color: #e1e1e1;
         }
 
-        table.board td.planeHead {
+        table.board td.planeHead1 {
             background-color: olive;
         }
-
-        table.board td.planeBody {
+        table.board td.planeBody1 {
             background-color: olivedrab;
+        }
+        table.board td.planeHead2 {
+            background-color:chocolate;
+        }
+        table.board td.planeBody2 {
+            background-color:coral;
+        }
+        table.board td.planeHead3 {
+            background-color:darkgreen;
+        }
+        table.board td.planeBody3 {
+            background-color:green;
         }
 
         .step2 {
             display: none
         }
 
-        .selectedDirection{
+        .selectedDirection {
             background-color: darkseagreen;
         }
     </style>
@@ -88,11 +59,8 @@
                     if (j == 1)
                         gridCode += '<th>' + i + '</th>';
 
-                    if (planesPositions[i][j] == "head") {
-                        gridCode += '<td class="planeHead"></td>';
-                    } else if (planesPositions[i][j] == "body") {
-                        gridCode += '<td class="planeBody"></td>';
-                    }
+                    if (planesPositions[i][j])
+                        gridCode += '<td class="'+planesPositions[i][j]+'"></td>';
                     else
                         gridCode += '<td></td>';
                 }
@@ -103,39 +71,123 @@
             $("#" + gridId).html(gridCode);
         }
 
+        function computePlanes(myPlanesPositions, direction, j, i, plane) {
+            var newBoard = {
+                currentPlane: plane,
+                myPlanesPositions: myPlanesPositions,
+            };
+            let newPlanePositions = Array(11).fill().map(() => Array(11).fill(0));
+
+            switch(direction){
+                case "leftArrow":
+                    if (i>1 && i<10 && j<8){
+                        newPlanePositions[i][j]     = "planeHead"+plane;
+                        newPlanePositions[i-1][j+1] = "planeBody"+plane;
+                        newPlanePositions[i][j+1]   = "planeBody"+plane;
+                        newPlanePositions[i+1][j+1] = "planeBody"+plane;
+                        newPlanePositions[i][j+2]   = "planeBody"+plane;
+                        newPlanePositions[i-1][j+3] = "planeBody"+plane;
+                        newPlanePositions[i][j+3]   = "planeBody"+plane;
+                        newPlanePositions[i+1][j+3] = "planeBody"+plane;                        
+                    } else {
+                        console.log("nu se poate pune aici!");
+                    }    
+                break;
+                case "rightArrow":
+                    if (i>1 && i<10 && j>3){
+                        newPlanePositions[i][j]     = "planeHead"+plane;
+                        newPlanePositions[i-1][j-1] = "planeBody"+plane;
+                        newPlanePositions[i][j-1]   = "planeBody"+plane;
+                        newPlanePositions[i+1][j-1] = "planeBody"+plane;
+                        newPlanePositions[i][j-2]   = "planeBody"+plane;
+                        newPlanePositions[i-1][j-3] = "planeBody"+plane;
+                        newPlanePositions[i][j-3]   = "planeBody"+plane;
+                        newPlanePositions[i+1][j-3] = "planeBody"+plane;                        
+                    } else {
+                        console.log("nu se poate pune aici!");
+                    }    
+                break;
+                case "upArrow":
+                    if (j>1 && j<10 && i<8){
+                        newPlanePositions[i][j]     = "planeHead"+plane;
+                        newPlanePositions[i+1][j-1] = "planeBody"+plane;
+                        newPlanePositions[i+1][j]   = "planeBody"+plane;
+                        newPlanePositions[i+1][j+1] = "planeBody"+plane;
+                        newPlanePositions[i+2][j]   = "planeBody"+plane;
+                        newPlanePositions[i+3][j-1] = "planeBody"+plane;
+                        newPlanePositions[i+3][j]   = "planeBody"+plane;
+                        newPlanePositions[i+3][j+1] = "planeBody"+plane;                        
+                    } else {
+                        console.log("nu se poate pune aici!");
+                    }
+                break;
+                case "downArrow":
+                    if (j>1 && j<10 && i>3){
+                        newPlanePositions[i][j]     = "planeHead"+plane;
+                        newPlanePositions[i-1][j-1] = "planeBody"+plane;
+                        newPlanePositions[i-1][j]   = "planeBody"+plane;
+                        newPlanePositions[i-1][j+1] = "planeBody"+plane;
+                        newPlanePositions[i-2][j]   = "planeBody"+plane;
+                        newPlanePositions[i-3][j-1] = "planeBody"+plane;
+                        newPlanePositions[i-3][j]   = "planeBody"+plane;
+                        newPlanePositions[i-3][j+1] = "planeBody"+plane; 
+                    } else {
+                        console.log("nu se poate pune aici!");
+                    }
+                break;
+            }
+            var collision = checkColision(myPlanesPositions,newPlanePositions);
+            
+            if (collision){
+                console.log("se suprapun avioanele");
+            } else {    
+                for(i=1;i<=10;i++)
+                    for(j=1;j<=10;j++)
+                        if (newPlanePositions[i][j])
+                            myPlanesPositions[i][j] = newPlanePositions[i][j];
+                newBoard.currentPlane++;
+            }
+
+            if (newBoard.currentPlane<=3){
+                $("#currentPlaneTitle").html("Place plane <span>"+ newBoard.currentPlane + "</span> on the board");
+            }
+            //console.log(i + " " + j + ", plane :" + plane);
+
+            return newBoard;
+        }
+
+        function checkColision(myPlanesPositions,newPlanePositions){
+            var i=0, j=0;
+            for(i=1;i<=10;i++)
+                for(j=1;j<=10;j++)
+                    if (newPlanePositions[i][j]&&myPlanesPositions[i][j])
+                        return true;
+            return false;
+        }
+
         $(document).ready(function () {
             //initialize array with 0 
+            var plane = 1;
             let myPlanesPositions = Array(11).fill().map(() => Array(11).fill(0));
             let computerPlanesPositions = Array(11).fill().map(() => Array(11).fill(0));
             drawGrid(myPlanesPositions, "board", "myEmptyBoard");
 
-            //init my planes;
-            myPlanesPositions[1][3] = "head";
-            myPlanesPositions[2][2] = "body";
-            myPlanesPositions[2][3] = "body";
-            myPlanesPositions[2][4] = "body";
-            myPlanesPositions[3][3] = "body";
-            myPlanesPositions[4][2] = "body";
-            myPlanesPositions[4][3] = "body";
-            myPlanesPositions[4][4] = "body";
+            //trebuie delegat evenimentul click pe celule (td-uri), pentru ca sunt dinamice (se sterg si se recreaza)
+            $('#myEmptyBoard').on('click', "td", function () {
+                if (plane <= 3) {
+                    var col = $(this).index(),
+                        row = $(this).parent().index();
+                    //console.log("col index:" + col + ", row index :" + row);
 
-            myPlanesPositions[5][5] = "head";
-            myPlanesPositions[6][4] = "body";
-            myPlanesPositions[6][5] = "body";
-            myPlanesPositions[6][6] = "body";
-            myPlanesPositions[7][5] = "body";
-            myPlanesPositions[8][4] = "body";
-            myPlanesPositions[8][5] = "body";
-            myPlanesPositions[8][6] = "body";
+                    var planeDirection = $(".selectedDirection").attr("id");
+                    //console.log(planeDirection);
 
-            myPlanesPositions[6][9] = "head";
-            myPlanesPositions[5][8] = "body";
-            myPlanesPositions[5][9] = "body";
-            myPlanesPositions[5][10] = "body";
-            myPlanesPositions[4][9] = "body";
-            myPlanesPositions[3][8] = "body";
-            myPlanesPositions[3][9] = "body";
-            myPlanesPositions[3][10] = "body";
+                    newBoard = computePlanes(myPlanesPositions, planeDirection, col, row, plane);
+                    myPlanesPositions = newBoard.myPlanesPositions;
+                    plane = newBoard.currentPlane;
+                    drawGrid(myPlanesPositions, "board", "myEmptyBoard");
+                }
+            });
 
             drawGrid(myPlanesPositions, "board", "myBoard");
             drawGrid(computerPlanesPositions, "board", "computerBoard");
@@ -172,21 +224,21 @@
                     </table>
                 </div>
                 <div class="col-sm-6">
-                    <h3>Plane <span>1</span> position</h3>
+                    <h3 id="currentPlaneTitle">Place plane <span>1</span> on the board</h3>
                     <table>
                         <tr>
                             <td></td>
-                            <td><button class="directionSelector selectedDirection">&uarr;</button></td>
+                            <td><button class="directionSelector selectedDirection" id="upArrow">&uarr;</button></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td><button class="directionSelector">&larr;</button></td>
+                            <td><button class="directionSelector" id="leftArrow">&larr;</button></td>
                             <td></td>
-                            <td><button class="directionSelector">&rarr;</button></td>
+                            <td><button class="directionSelector" id="rightArrow">&rarr;</button></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td><button class="directionSelector">&darr;</button></td>
+                            <td><button class="directionSelector" id="downArrow">&darr;</button></td>
                             <td></td>
                         </tr>
                     </table>
