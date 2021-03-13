@@ -69,6 +69,9 @@
             background-color:green;
         }
 
+        #computerBoard td.planeHead1, #computerBoard td.planeHead2, #computerBoard td.planeHead3, #computerBoard td.planeBody1, #computerBoard td.planeBody2, #computerBoard td.planeBody3{
+            background-color: #ddd;
+        }
         table.board td.air {
             background-color:lightskyblue;
         }
@@ -85,6 +88,17 @@
 
         .selectedDirection {
             background-color: darkseagreen;
+        }
+
+        #humanScore, #computerScore{
+            font-weight: bolder;
+            text-transform: uppercase;
+        }
+        .deadCount{
+            color:crimson;
+        }
+        .hitCount{
+            color:indianred;
         }
     </style>
     <script>
@@ -247,24 +261,57 @@
             }
             return computerPlanesPositions;
         }
+        
         function hitPlane(player, positions, col, row){
-            //if (player=="computer")
+            console.log(player);
+            if (player=="human"){
+                var flag = true;
+
+                while (flag){                    
+                    col=Math.floor((Math.random() * 10) + 1);
+                    row=Math.floor((Math.random() * 10) + 1);
+                    
+                    var poz = positions[row][col];
+                    if ((poz != "air") && (poz != "PlaneDead") && (poz != "PlaneHit"))
+                        flag = false;
+                }
+            }
+
             console.log(col,row);
-            
+
             if (positions[row][col] == 0){
                 positions[row][col] = "air";
             }
             else {
-                var str = positions[row][col];
-                
-                //console.log(positions[row][col]);        
-                if (str.substr(5, 4) == "Head"){
+                var poz = positions[row][col];
+                      
+                if (poz.substr(5, 4) == "Head"){
                     positions[row][col] = "PlaneDead";
                 }
-                else if (str.substr(5, 4) == "Body")
+                else if (poz.substr(5, 4) == "Body")
                     positions[row][col] = "PlaneHit";
             }
+
             return positions;
+        }
+
+        function updateScore(player, positions){
+            var hits=0;
+            var deads = 0;
+
+            for(i=1;i<=10;i++){
+                for(j=1;j<=10;j++){
+                    if (positions[i][j] == "PlaneDead")
+                        deads++;
+                    if (positions[i][j] == "PlaneHit")
+                        hits++;
+                }
+            }
+            if (deads==3){
+                $("h2.step2").html("GAME OVER")
+            }
+            $("#"+player+"Score").html(player+": &nbsp;&nbsp;&nbsp; <span class='deadCount'> "+ deads + "</span> dead &nbsp; | &nbsp; <span class='hitCount'> "+ hits + "</span> hit");
+
         }
 
         $(document).ready(function () {
@@ -299,7 +346,6 @@
                 drawGrid(humanPlanesPositions, "board", "humanBoard");
                 computerPlanesPositions = generateComputerPlanes(computerPlanesPositions);
                 drawGrid(computerPlanesPositions, "board", "computerBoard");
-                $("#computerBoard").addClass("gameOn");
             });
             $("#backButton").click(function () {
                 $(".step2").fadeOut(500, function () {
@@ -314,8 +360,18 @@
             $("#computerBoard").on('click', "td", function () {
                 var col = $(this).index(),
                 row = $(this).parent().index();
+
+                //human hits computer planes
                 computerPlanesPosition = hitPlane("computer", computerPlanesPositions, col, row);
                 drawGrid(computerPlanesPositions, "board", "computerBoard");
+
+                //computer hits human planes randomly
+                humanPlanesPositions = hitPlane("human", humanPlanesPositions, 0, 0);
+                drawGrid(humanPlanesPositions, "board", "humanBoard");
+
+                //update score
+                updateScore("computer", computerPlanesPositions);
+                updateScore("human", humanPlanesPositions);
             });
         });
     </script>
@@ -362,12 +418,12 @@
             <h2 class="text-center step2">Step 2 - Play with the computer</h2>
 
             <div class="col-sm-6">
-                <h3>HUMAN - 0</span></h3>
+                <h3 id="humanScore">HUMAN - 0</span></h3>
                 <table class="board" id="humanBoard">
                 </table>
             </div>
             <div class="col-sm-6">
-                <h3>COMPUTER - <span>0</span></h3>
+                <h3 id="computerScore">COMPUTER - <span>0</span></h3>
                 <table class="board" id="computerBoard">
                 </table>
                 <p>&nbsp;</p>
